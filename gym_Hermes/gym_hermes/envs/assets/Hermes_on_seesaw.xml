@@ -1,0 +1,104 @@
+<!-- 3D hermes in 2d plane -->
+<mujoco model="Hermes">
+    <compiler angle="radian" coordinate="local" inertiafromgeom="auto"/>
+
+    <option gravity="0 0 -9.8" timestep="0.001" collision="predefined" cone="elliptic" o_solref="0.002 1">
+        <flag override="enable"/>
+    </option>
+
+    <visual>
+    </visual>
+
+    <asset>
+        <texture type="skybox" builtin="gradient" width="100" height="100" rgb1="0.4 0.6 0.8" rgb2="0 0 0"/>
+        <texture type="2d" name="plane" builtin="checker" rgb1="0.2 0.2 0.2" rgb2="0.3 0.3 0.3" width="100"
+                 height="100"/>
+        <material name="plane" reflectance="0.0" texture="plane" texrepeat="1 1" texuniform="true"/>
+    </asset>
+
+    <worldbody>
+        <light mode="trackcom" pos="0 0 5" dir="0 0 -1"/>
+        <light directional="true" pos="0 0 10" dir="0 0 -1" diffuse="0.2 0.2 0.2" specular="0 0 0"/>
+        <!--geom name="floor" pos="0 0 0" size="50 50 50" type="plane" material="plane" condim="3" conaffinity="15"/-->
+        <geom name="floor" pos="0 0 0" size="50 50 50" type="plane" rgba="1 1 1 0" condim="3" conaffinity="15"/>
+
+        <body name="torso" pos="0 0 0">
+            <camera name="track" pos="0 -3 0" zaxis="0 -1 0" mode="track"/>
+            <geom type="box" size="0.15 0.075 0.1" rgba="0.992 0.576 0.588 1" mass="5" pos="0 0 0"/>
+            <joint name="root_x" type="slide" axis="1 0 0" pos="0 0 0" limited="false" damping="0" armature="0"
+                   stiffness="0"/>
+            <joint name="root_z" type="slide" axis="0 0 1" pos="0 0 0" limited="false" damping="0" armature="0"
+                   stiffness="0"/>
+            <joint name="root_rotation" type="hinge" axis="0 1 0" pos="0 0 0" limited="false" damping="0" armature="0"
+                   stiffness="0"/>
+
+            <!-- left leg -->
+            <body name="left1" pos="-0.12 0 0">
+                <geom type="cylinder" fromto="-0.015 0 0 0.015 0 0" size="0.07" mass="0.2" rgba="0.686 1 0.616 1"/>
+                <joint name="hip1_l" type="hinge" axis="0 1 0" pos="0 0 0" limited="false" damping="0.1" stiffness="0"
+                       armature="0.0001"/>
+                <body name="left2" pos="0 0 0">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.3" size="0.015" mass="0.05" rgba="0.686 1 0.616 1"/>
+                    <joint name="hip2_l" type="hinge" axis="1 0 0" pos="0 0 0" limited="false" damping="0.1"
+                           stiffness="0" armature="0.0001"/>
+                    <body name="left3" pos="0 0 -0.3">
+                        <geom type="capsule" fromto="0 0 0 0 0 -0.28" size="0.01" mass="0.03" rgba="1 0.945 0.620 1"/>
+                        <joint name="knee_l" type="hinge" axis="1 0 0" pos="0 0 0" limited="false" damping="0.1"
+                               stiffness="0" armature="0.0001"/>
+                        <body name="left4" pos="0 0 -0.28">
+                            <geom type="sphere" pos="0 0 0" size="0.02" mass="0.01" rgba="0.839 0.388 0.937 1"
+                                  friction="100 100 100" name="foot_l"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+            <!-- right leg -->
+            <body name="right1" pos="0.12 0 0">
+                <geom type="cylinder" fromto="-0.015 0 0 0.015 0 0" size="0.07" mass="0.2" rgba="0.686 1 0.616 1"/>
+                <joint name="hip1_r" type="hinge" axis="0 1 0" pos="0 0 0" limited="false" damping="0.1" stiffness="0"
+                       armature="0.0001"/>
+                <body name="right2" pos="0 0 0">
+                    <geom type="capsule" fromto="0 0 0 0 0 -0.3" size="0.015" mass="0.05" rgba="0.686 1 0.616 1"/>
+                    <joint name="hip2_r" type="hinge" axis="1 0 0" pos="0 0 0" limited="false" damping="0.1"
+                           stiffness="0" armature="0.0001"/>
+                    <body name="right3" pos="0 0 -0.3">
+                        <geom type="capsule" fromto="0 0 0 0 0 -0.28" size="0.01" mass="0.03" rgba="1 0.945 0.620 1"/>
+                        <joint name="knee_r" type="hinge" axis="1 0 0" pos="0 0 0" limited="false" damping="0.1"
+                               stiffness="0" armature="0.0001"/>
+                        <body name="right4" pos="0 0 -0.28">
+                            <geom type="sphere" pos="0 0 0" size="0.02" mass="0.01" rgba="0.839 0.388 0.937 1"
+                                  friction="100 100 100" name="foot_r"/>
+                        </body>
+                    </body>
+                </body>
+            </body>
+
+        </body>
+
+        <body name="seesaw" pos="0 0 -0.01">
+            <geom type="box" size="1 1 0.01" mass="1" material="plane" condim="3" conaffinity="15" name="seesaw"/>
+            <joint name="rotation_y" type="hinge" axis="0 1 0" pos="0 0 0" limited="false" damping="0.2" armature="0"
+                   stiffness="30"/>
+        </body>
+
+    </worldbody>
+
+    <actuator>
+        <motor joint="hip1_l" gear="1" name="hip1_l"/>
+        <motor joint="hip2_l" gear="1" name="hip2_l"/>
+        <motor joint="knee_l" gear="1" name="knee_l"/>
+        <motor joint="hip1_r" gear="1" name="hip1_r"/>
+        <motor joint="hip2_r" gear="1" name="hip2_r"/>
+        <motor joint="knee_r" gear="1" name="knee_r"/>
+        <motor joint="rotation_y" gear="1" name="seesaw_r"/>
+    </actuator>
+
+    <contact>
+        <!--pair geom1="floor" geom2="foot_l" condim="3" friction="0.5 0.5 0.5" solref="0.002 1"/-->
+        <!--pair geom1="floor" geom2="foot_r" condim="3" friction="0.5 0.5 0.5" solref="0.002 1"/-->
+        <pair geom1="seesaw" geom2="foot_r" condim="3" friction="0.5 0.5 0.5" solref="0.002 1"/>
+        <pair geom1="seesaw" geom2="foot_l" condim="3" friction="0.5 0.5 0.5" solref="0.002 1"/>
+    </contact>
+
+</mujoco>
